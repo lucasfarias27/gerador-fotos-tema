@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Resultado — Studio do Zap{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Imagens Geradas!</h1>
+
+    <div id="resultado-conteudo">
+        <p class="subtitle">Carregando resultado...</p>
+    </div>
+
+    <div style="text-align:center; margin-top: 2rem;">
+        <a href="/" class="btn-primary">Gerar novas imagens</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const jobId = "{{ job_id }}";
+
+async function carregarResultado() {
+    if (!jobId) {
+        document.getElementById('resultado-conteudo').innerHTML =
+            '<p class="alert alert-erro">ID do job não informado.</p>';
+        return;
+    }
+
+    try {
+        const res = await fetch(`/api/status-job/${jobId}`);
+        const data = await res.json();
+        const el = document.getElementById('resultado-conteudo');
+
+        if (data.status === 'concluido') {
+            const total = data.imagens_geradas;
+            const pasta = data.pasta_destino || '';
+            let html = `
+                <div class="alert alert-sucesso">
+                    ${total} imagem(ns) salva(s) com sucesso!
+                </div>
+                <p class="pasta-destino">
+                    <strong>Pasta:</strong> <code>${pasta}</code>
+                </p>
+            `;
+            if (data.imagens_salvas && data.imagens_salvas.length > 0) {
+                html += '<ul class="lista-arquivos">';
+                data.imagens_salvas.forEach(p => {
+                    const nome = p.split(/[\\/]/).pop();
+                    html += `<li>${nome}</li>`;
+                });
+                html += '</ul>';
+            }
+            el.innerHTML = html;
+
+        } else if (data.status === 'erro') {
+            el.innerHTML = `<div class="alert alert-erro">Erro: ${data.erro || 'Erro desconhecido.'}</div>`;
+        } else if (data.status === 'cancelado') {
+            el.innerHTML = `<div class="alert alert-aviso">Geração cancelada pelo usuário.</div>`;
+        } else {
+            el.innerHTML = `<p>Status: ${data.status}</p>`;
+        }
+    } catch (e) {
+        document.getElementById('resultado-conteudo').innerHTML =
+            `<div class="alert alert-erro">Erro ao carregar resultado: ${e.message}</div>`;
+    }
+}
+
+carregarResultado();
+</script>
+{% endblock %}

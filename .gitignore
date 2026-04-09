@@ -1,0 +1,26 @@
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.env
+.venv
+venv/
+env/
+
+# Chrome profile (dados sensíveis do navegador)
+chrome_profile/
+
+# Downloads gerados
+downloads/
+
+# Uploads de usuários (gerados em runtime)
+app/static/uploads/
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db

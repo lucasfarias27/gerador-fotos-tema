@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Studio do Zap{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Studio do Zap</h1>
+    <p class="subtitle">Envie sua foto, escolha um tema e deixe a IA criar imagens incríveis para você.</p>
+
+    <div id="erro-global" class="alert alert-erro" style="display:none;"></div>
+
+    <form id="form-geracao" novalidate>
+
+        <!-- STEP 1: Upload de fotos -->
+        <section class="card">
+            <h2><span class="step-badge">1</span> Fotos de Referência</h2>
+            <p class="hint">Envie de 1 a 5 fotos. Formatos aceitos: JPG, PNG, WEBP.</p>
+
+            <div id="drop-zone" class="drop-zone">
+                <div class="drop-zone-content">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/></svg>
+                    <p>Arraste suas fotos aqui ou <span class="link-btn">clique para selecionar</span></p>
+                    <p class="small">Máximo: 5 fotos</p>
+                </div>
+                <input type="file" id="input-fotos" name="fotos[]" multiple accept=".jpg,.jpeg,.png,.webp" style="display:none;">
+            </div>
+
+            <div id="preview-container" class="preview-container" style="display:none;"></div>
+            <div id="contador-fotos" class="contador" style="display:none;"></div>
+        </section>
+
+        <!-- STEP 2: Configurações -->
+        <section class="card">
+            <h2><span class="step-badge">2</span> Configurações</h2>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="select-tema">Tema</label>
+                    <select id="select-tema" name="tema" required>
+                        <option value="">Carregando temas...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="input-quantidade">Quantidade de imagens</label>
+                    <input type="number" id="input-quantidade" name="quantidade" min="1" max="10" value="1" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="input-pasta">Pasta de destino</label>
+                <div class="input-with-btn">
+                    <input type="text" id="input-pasta" name="pasta_destino" placeholder="Ex: C:\Users\Lucas\Desktop\Fotos" required>
+                    <button type="button" id="btn-pasta-padrao" class="btn-secondary">Escolher pasta</button>
+                </div>
+                <span class="hint-small">As imagens geradas serão salvas nesta pasta.</span>
+            </div>
+        </section>
+
+        <!-- STEP 3: Gerar -->
+        <section class="card card-action">
+            <button type="submit" id="btn-gerar" class="btn-primary btn-large" disabled>
+                GERAR IMAGENS
+            </button>
+        </section>
+
+        <!-- Progresso -->
+        <section class="card" id="section-progresso" style="display:none;">
+            <h2>Progresso</h2>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <p id="mensagem-status" class="mensagem-status">Iniciando...</p>
+            <button type="button" id="btn-cancelar" class="btn-danger">Cancelar</button>
+        </section>
+
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/status_poller.js') }}"></script>
+{% endblock %}
